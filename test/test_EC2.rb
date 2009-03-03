@@ -50,8 +50,6 @@ context "The EC2 method " do
   specify "EC2::Base should allow specification of base path" do
     @ec2 = EC2::Base.new( :access_key_id => "not a key",
                           :secret_access_key => "not a secret",
-                          :use_ssl => false,
-                          :server => "foo.example.com",
                           :base_path => '/services/Eucalyptus' )
 
     @ec2.base_path.should.equal '/services/Eucalyptus'
@@ -59,11 +57,24 @@ context "The EC2 method " do
 
   specify "EC2::Base should default base path to /" do
     @ec2 = EC2::Base.new( :access_key_id => "not a key",
-                          :secret_access_key => "not a secret",
-                          :use_ssl => false,
-                          :server => "foo.example.com" )
+                          :secret_access_key => "not a secret" )
 
     @ec2.base_path.should.equal '/'
+  end
+
+  specify "EC2::Base should allow specification of http method" do
+    @ec2 = EC2::Base.new( :access_key_id => "not a key",
+                          :secret_access_key => "not a secret",
+                          :http_method => 'GET' )
+
+    @ec2.http_method.should.equal 'GET'
+  end
+
+  specify "EC2::Base should default http method to POST" do
+    @ec2 = EC2::Base.new( :access_key_id => "not a key",
+                          :secret_access_key => "not a secret" )
+
+    @ec2.http_method.should.equal 'POST'
   end
 
   specify "EC2.canonical_string(path) should conform to Amazon's requirements " do

@@ -25,8 +25,8 @@ module EC2
   #
   if ENV['EC2_URL']
     EC2_URL = ENV['EC2_URL']
-    VALID_HOSTS = ['https://ec2.amazonaws.com', 'https://us-east-1.ec2.amazonaws.com', 'https://eu-west-1.ec2.amazonaws.com']
-    raise ArgumentError, "Invalid EC2_URL environment variable : #{EC2_URL}" unless VALID_HOSTS.include?(EC2_URL)
+    # VALID_HOSTS = ['https://ec2.amazonaws.com', 'https://us-east-1.ec2.amazonaws.com', 'https://eu-west-1.ec2.amazonaws.com']
+    # raise ArgumentError, "Invalid EC2_URL environment variable : #{EC2_URL}" unless VALID_HOSTS.include?(EC2_URL)
     DEFAULT_HOST = URI.parse(EC2_URL).host
   else
     # default US host
@@ -97,7 +97,7 @@ module EC2
   #
   class Base
 
-    attr_reader :use_ssl, :server, :proxy_server, :port, :base_path
+    attr_reader :use_ssl, :server, :proxy_server, :port, :base_path, :http_method
 
     def initialize( options = {} )
 
@@ -106,13 +106,15 @@ module EC2
                   :use_ssl => true,
                   :server => DEFAULT_HOST,
                   :proxy_server => nil,
-                  :base_path => '/'
+                  :base_path => '/',
+                  :http_method => 'POST'
                   }.merge(options)
 
       @server = options[:server]
       @proxy_server = options[:proxy_server]
       @use_ssl = options[:use_ssl]
       @base_path = options[:base_path]
+      @http_method = options[:http_method]
 
       raise ArgumentError, "No :access_key_id provided" if options[:access_key_id].nil? || options[:access_key_id].empty?
       raise ArgumentError, "No :secret_access_key provided" if options[:secret_access_key].nil? || options[:secret_access_key].empty?
@@ -189,7 +191,8 @@ module EC2
             CGI::escape(param[0]) + "=" + CGI::escape(param[1])
           end.join("&") + "&Signature=" + sig
 
-          req = Net::HTTP::Post.new(@base_path)
+          http_class = (@http_method == 'POST') ? Net::HTTP::Post : Net::HTTP::Get
+          req = http_class.new(@base_path)
           req.content_type = 'application/x-www-form-urlencoded'
           req['User-Agent'] = "github-amazon-ec2-ruby-gem"
 
@@ -207,7 +210,7 @@ module EC2
 
       # Set the Authorization header using AWS signed header authentication
       def get_aws_auth_param(params, secret_access_key)
-        canonical_string =  EC2.canonical_string(params, @server, 'GET', @base_path)
+        canonical_string =  EC2.canonical_string(params, @server, @http_method, @base_path)
         encoded_canonical = EC2.encode(secret_access_key, canonical_string)
       end
 
