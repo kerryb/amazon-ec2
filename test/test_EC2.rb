@@ -76,6 +76,12 @@ context "The EC2 method " do
       EC2.canonical_string(path).should.equal "POST\neu-west-1.ec2.amazonaws.com\n/\nname1=value1&name2=value2&name3=value3"
     end
   end
+  
+  specify 'EC2.canonical_string(path) should allow specification of host, base path and method' do
+    path = {"name1" => "value1", "name2" => "value2", "name3" => "value3"}
+    EC2.canonical_string(path, 'foo.example.com', 'GET', '/services/Eucalyptus').should.
+        equal "GET\nfoo.example.com\n/services/Eucalyptus\nname1=value1&name2=value2&name3=value3"
+  end
 
   specify "EC2.encode should return the expected string" do
     EC2.encode("secretaccesskey", "foobar123", urlencode=true).should.equal "e3jeuDc3DIX2mW8cVqWiByj4j5g%3D"

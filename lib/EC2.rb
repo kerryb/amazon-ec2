@@ -57,7 +57,6 @@ module EC2
       host + "\n" +
       base + "\n" +
       sigquery
-
   end
 
   # Encodes the given string with the secret_access_key, by taking the
@@ -208,7 +207,7 @@ module EC2
 
       # Set the Authorization header using AWS signed header authentication
       def get_aws_auth_param(params, secret_access_key)
-        canonical_string =  EC2.canonical_string(params)
+        canonical_string =  EC2.canonical_string(params, @server, 'GET', @base_path)
         encoded_canonical = EC2.encode(secret_access_key, canonical_string)
       end
 
