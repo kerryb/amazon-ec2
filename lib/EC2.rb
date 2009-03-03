@@ -189,7 +189,7 @@ module EC2
             CGI::escape(param[0]) + "=" + CGI::escape(param[1])
           end.join("&") + "&Signature=" + sig
 
-          req = Net::HTTP::Post.new("/")
+          req = Net::HTTP::Post.new(@base_path)
           req.content_type = 'application/x-www-form-urlencoded'
           req['User-Agent'] = "github-amazon-ec2-ruby-gem"
 
