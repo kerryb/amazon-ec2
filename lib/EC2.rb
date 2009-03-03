@@ -98,7 +98,7 @@ module EC2
   #
   class Base
 
-    attr_reader :use_ssl, :server, :proxy_server, :port
+    attr_reader :use_ssl, :server, :proxy_server, :port, :base_path
 
     def initialize( options = {} )
 
@@ -106,12 +106,14 @@ module EC2
                   :secret_access_key => "",
                   :use_ssl => true,
                   :server => DEFAULT_HOST,
-                  :proxy_server => nil
+                  :proxy_server => nil,
+                  :base_path => '/'
                   }.merge(options)
 
       @server = options[:server]
       @proxy_server = options[:proxy_server]
       @use_ssl = options[:use_ssl]
+      @base_path = options[:base_path]
 
       raise ArgumentError, "No :access_key_id provided" if options[:access_key_id].nil? || options[:access_key_id].empty?
       raise ArgumentError, "No :secret_access_key provided" if options[:secret_access_key].nil? || options[:secret_access_key].empty?

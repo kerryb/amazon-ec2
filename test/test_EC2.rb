@@ -44,9 +44,26 @@ context "The EC2 method " do
                           :server => "foo.example.com",
                           :port => 8443 )
 
-    @ec2.use_ssl.should.equal true
     @ec2.port.should.equal 8443
-    @ec2.server.should.equal "foo.example.com"
+  end
+
+  specify "EC2::Base should allow specification of base path" do
+    @ec2 = EC2::Base.new( :access_key_id => "not a key",
+                          :secret_access_key => "not a secret",
+                          :use_ssl => false,
+                          :server => "foo.example.com",
+                          :base_path => '/services/Eucalyptus' )
+
+    @ec2.base_path.should.equal '/services/Eucalyptus'
+  end
+
+  specify "EC2::Base should default base path to /" do
+    @ec2 = EC2::Base.new( :access_key_id => "not a key",
+                          :secret_access_key => "not a secret",
+                          :use_ssl => false,
+                          :server => "foo.example.com" )
+
+    @ec2.base_path.should.equal '/'
   end
 
   specify "EC2.canonical_string(path) should conform to Amazon's requirements " do
